@@ -35,3 +35,27 @@ val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "17"
 }
+
+// from here added by Ben to get things working
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+tasks.withType<Jar> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from(
+        configurations.runtimeClasspath.get()
+            .filter { it.name.contains("kotlin-stdlib") }
+            .map { zipTree(it) }
+    )
+}
